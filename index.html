@@ -1,0 +1,430 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>COYS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: navy masthead with the next match on top, then season summary, results that open into scorers, and the league table. */
+:root {
+  --bg: #f2f4fa;
+  --surface: #ffffff;
+  --fg: #0e1530;
+  --muted: #57607d;
+  --line: #d9deec;
+  --navy: #132257;
+  --band-ink: #ffffff;
+  --band-muted: #b9c4ee;
+  --band-card: #1c2f73;
+  --band-line: #3a4c8f;
+  --accent: #132257;
+  --hl: #e3e9fb;
+  --win: #1b7a4c;
+  --draw: #6b7390;
+  --loss: #c0262d;
+  --on-solid: #ffffff;
+  --font-display: "Archivo Black", "Noto Sans KR", system-ui, sans-serif;
+  --font-body: "Inter", "Noto Sans KR", system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1029;
+    --surface: #111a3f;
+    --fg: #e8ecfa;
+    --muted: #98a2c6;
+    --line: #222d5c;
+    --accent: #a9bbff;
+    --hl: #1a2757;
+    --win: #5fcf92;
+    --draw: #9aa3c4;
+    --loss: #ff7b80;
+    --on-solid: #0a1029;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1029;
+  --surface: #111a3f;
+  --fg: #e8ecfa;
+  --muted: #98a2c6;
+  --line: #222d5c;
+  --accent: #a9bbff;
+  --hl: #1a2757;
+  --win: #5fcf92;
+  --draw: #9aa3c4;
+  --loss: #ff7b80;
+  --on-solid: #0a1029;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--navy);
+  z-index: 10;
+}
+h1, h2, h3, p, ol, ul, dl, dd { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+.wrap {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* masthead */
+.band { background: var(--navy); color: var(--band-ink); }
+.band .wrap { padding-block: 20px 28px; display: flex; flex-direction: column; gap: 22px; }
+.bar { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; }
+.logo { font-family: var(--font-display); font-size: 2.5rem; line-height: 1; letter-spacing: 0.04em; margin: 0; font-weight: 400; }
+.bar .sub { color: var(--band-muted); font-size: 0.875rem; }
+
+.next { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 24px; align-items: end; background: var(--band-card); border: 1px solid var(--band-line); border-radius: 12px; padding: 20px; }
+@media (max-width: 560px) { .next { grid-template-columns: minmax(0, 1fr); } }
+.next .label { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; color: var(--band-muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.chip { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 4px; background: var(--band-ink); color: var(--navy); letter-spacing: 0; }
+.vs { font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; line-height: 1.25; margin-top: 6px; }
+.vs .x { font-family: var(--font-body); font-weight: 500; font-size: 1rem; color: var(--band-muted); margin: 0 8px; }
+.when { margin-top: 8px; font-size: 1.0625rem; font-weight: 600; }
+.where { color: var(--band-muted); font-size: 0.875rem; }
+.dday { text-align: right; }
+@media (max-width: 560px) { .dday { text-align: left; } }
+.dday .big { font-family: var(--font-display); font-size: 2.75rem; line-height: 1; }
+.dday .cap { display: block; color: var(--band-muted); font-size: 0.8125rem; margin-top: 2px; }
+.then { color: var(--band-muted); font-size: 0.9375rem; }
+.then b { color: var(--band-ink); font-weight: 600; }
+
+/* sections */
+main .wrap { padding-block: 28px 48px; display: flex; flex-direction: column; gap: 36px; }
+.sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.sec h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; line-height: 1.3; letter-spacing: 0.01em; color: var(--accent); }
+.hint { color: var(--muted); font-size: 0.8125rem; }
+
+/* summary */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+@media (max-width: 560px) { .stat:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+.stat dt { color: var(--muted); font-size: 0.8125rem; font-weight: 500; }
+.stat dd { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.3; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.stat dd small { font-family: var(--font-body); font-weight: 500; font-size: 0.8125rem; color: var(--muted); }
+.formrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.pills { display: flex; gap: 6px; }
+.pill { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: 0.8125rem; font-weight: 700; line-height: 1; color: var(--on-solid); }
+.pill.w { background: var(--win); }
+.pill.d { background: var(--draw); }
+.pill.l { background: var(--loss); }
+
+/* matches */
+.matches { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.match + .match { border-top: 1px solid var(--line); }
+.match summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; }
+.match summary::-webkit-details-marker { display: none; }
+.match summary:hover { background: var(--hl); }
+.m-top { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.8125rem; }
+.m-top .res { margin-left: auto; }
+.m-top .pill { width: 24px; height: 24px; font-size: 0.75rem; }
+.m-score { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.m-score .t { font-size: 0.9375rem; }
+.m-score .t.home { text-align: right; }
+.m-score .t.me { font-weight: 700; color: var(--accent); }
+.m-score .sc { font-family: var(--font-display); font-size: 1.375rem; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.m-score .sc i { font-style: normal; color: var(--muted); font-family: var(--font-body); font-weight: 500; margin: 0 4px; }
+.chev { width: 10px; height: 10px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); margin-right: 4px; transition: transform 0.15s; }
+.match[open] .chev { transform: rotate(-135deg); }
+.goals { padding: 4px 16px 16px; background: var(--hl); }
+.goal-list { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+.g { display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto; gap: 10px; align-items: baseline; }
+.gm { font-weight: 700; font-variant-numeric: tabular-nums; }
+.gm.txt { font-weight: 500; font-size: 0.8125rem; color: var(--muted); }
+.gn { min-width: 0; }
+.gt { font-size: 0.8125rem; color: var(--muted); }
+.g.tot .gn { font-weight: 700; color: var(--accent); }
+.og { font-size: 0.75rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
+.nogoal { padding-top: 12px; color: var(--muted); }
+
+/* table */
+.table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th { text-align: right; font-size: 0.8125rem; font-weight: 500; color: var(--muted); padding: 10px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+th.rk, td.rk { text-align: center; width: 2.75rem; padding-left: 12px; }
+th.tm, td.tm { text-align: left; white-space: normal; min-width: 8rem; }
+td.pts { font-weight: 700; }
+tr.me td { background: var(--hl); font-weight: 600; color: var(--accent); }
+tr.me td.rk { box-shadow: inset 3px 0 0 var(--accent); }
+@media (max-width: 560px) { .hide-sm { display: none; } th, td { padding-left: 6px; padding-right: 6px; } }
+
+.notes { color: var(--muted); font-size: 0.8125rem; display: flex; flex-direction: column; gap: 4px; max-width: 65ch; }
+footer { border-top: 1px solid var(--line); }
+footer .wrap { padding-block: 20px 40px; }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="bar">
+      <h1 class="logo">COYS</h1>
+    </div>
+    <section class="next" id="next" aria-labelledby="next-label"></section>
+    <p class="then" id="then"></p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="sec" aria-labelledby="h-sum">
+      <h2 id="h-sum">2026-27 프리미어리그</h2>
+      <dl class="stats" id="stats"></dl>
+      <div class="formrow">
+        <span class="hint">최근 5경기 (왼쪽이 오래된 경기)</span>
+        <div class="pills" id="form"></div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-match">
+      <h2 id="h-match">경기 전적</h2>
+      <p class="hint">경기를 누르면 득점자와 득점 시간이 펼쳐져요.</p>
+      <div class="matches" id="matches"></div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-table">
+      <h2 id="h-table">프리미어리그 순위</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="rk" scope="col">순위</th>
+              <th class="tm" scope="col">팀</th>
+              <th scope="col">경기</th>
+              <th scope="col">승</th>
+              <th scope="col">무</th>
+              <th scope="col">패</th>
+              <th class="hide-sm" scope="col">득점</th>
+              <th class="hide-sm" scope="col">실점</th>
+              <th scope="col">득실</th>
+              <th scope="col">승점</th>
+            </tr>
+          </thead>
+          <tbody id="table"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="notes" id="notes"></div>
+  </div>
+</footer>
+
+<script type="application/json" id="coys-data">
+{
+  "updated": "2026-11-11",
+  "through": "11월 7일 리즈전",
+  "standings": [
+    {"t":"아스널","p":10,"w":9,"d":0,"l":1,"gf":15,"ga":5,"pts":27},
+    {"t":"브라이턴","p":10,"w":7,"d":1,"l":2,"gf":26,"ga":7,"pts":22},
+    {"t":"맨체스터 시티","p":10,"w":7,"d":0,"l":3,"gf":21,"ga":13,"pts":21},
+    {"t":"리버풀","p":10,"w":5,"d":3,"l":2,"gf":14,"ga":10,"pts":18},
+    {"t":"첼시","p":10,"w":5,"d":1,"l":4,"gf":19,"ga":16,"pts":16},
+    {"t":"에버턴","p":10,"w":4,"d":4,"l":2,"gf":12,"ga":10,"pts":16},
+    {"t":"본머스","p":10,"w":4,"d":3,"l":3,"gf":16,"ga":14,"pts":15},
+    {"t":"브렌트퍼드","p":10,"w":3,"d":5,"l":2,"gf":16,"ga":11,"pts":14},
+    {"t":"리즈","p":10,"w":3,"d":5,"l":2,"gf":10,"ga":8,"pts":14},
+    {"t":"애스턴 빌라","p":10,"w":3,"d":4,"l":3,"gf":14,"ga":17,"pts":13},
+    {"t":"토트넘","p":10,"w":3,"d":3,"l":4,"gf":10,"ga":11,"pts":12,"me":true},
+    {"t":"뉴캐슬","p":10,"w":3,"d":3,"l":4,"gf":13,"ga":16,"pts":12},
+    {"t":"헐 시티","p":10,"w":2,"d":5,"l":3,"gf":11,"ga":11,"pts":11},
+    {"t":"입스위치","p":10,"w":3,"d":2,"l":5,"gf":15,"ga":20,"pts":11},
+    {"t":"풀럼","p":10,"w":2,"d":4,"l":4,"gf":10,"ga":12,"pts":10},
+    {"t":"노팅엄 포레스트","p":10,"w":2,"d":3,"l":5,"gf":9,"ga":13,"pts":9},
+    {"t":"코번트리 시티","p":10,"w":3,"d":0,"l":7,"gf":10,"ga":19,"pts":9},
+    {"t":"맨체스터 유나이티드","p":10,"w":1,"d":5,"l":4,"gf":14,"ga":19,"pts":8},
+    {"t":"선덜랜드","p":10,"w":2,"d":2,"l":6,"gf":8,"ga":17,"pts":8},
+    {"t":"크리스탈 팰리스","p":10,"w":2,"d":1,"l":7,"gf":10,"ga":24,"pts":7}
+  ],
+  "matches": [
+    {"d":"2026-08-22","h":"A","opp":"브렌트퍼드","tf":0,"of":3,"g":[
+      {"s":"Keane Lewis-Potter","m":"12","side":"opp"},
+      {"s":"Vitaly Janelt","m":"33","side":"opp"},
+      {"s":"Michael Kayode","m":null,"note":"후반 시작 5분 이내","side":"opp"}]},
+    {"d":"2026-08-29","h":"H","opp":"뉴캐슬","tf":0,"of":2,"g":[
+      {"s":"Anthony Elanga","m":"62","side":"opp"},
+      {"s":"Yoane Wissa","m":"72","side":"opp"}]},
+    {"d":"2026-09-05","h":"A","opp":"노팅엄 포레스트","tf":0,"of":0,"g":[]},
+    {"d":"2026-09-12","h":"H","opp":"에버턴","tf":0,"of":0,"g":[]},
+    {"d":"2026-09-19","h":"H","opp":"애스턴 빌라","tf":2,"of":3,"g":[
+      {"s":"Johan Manzambi","m":null,"note":"전반 종료 직전","side":"opp"},
+      {"s":"Nicolas Jackson","m":null,"note":"후반 60분대","side":"opp"},
+      {"s":"Emiliano Buendia","m":null,"note":"후반 막판 (약 79분)","side":"opp"},
+      {"s":"Conor Gallagher","m":null,"note":"후반 막판","side":"tot"},
+      {"s":"Jan Paul van Hecke","m":null,"note":"경기 종료 직전","side":"tot"}]},
+    {"d":"2026-10-10","h":"A","opp":"맨체스터 유나이티드","tf":1,"of":1,"g":[
+      {"s":"Bryan Mbeumo","m":"73","side":"opp"},
+      {"s":"Dominic Solanke","m":"90+2","side":"tot"}]},
+    {"d":"2026-10-19","h":"H","opp":"코번트리 시티","tf":3,"of":1,"g":[
+      {"s":"James Maddison","m":"14","side":"tot"},
+      {"s":"Jack Rudoni","m":"49","side":"opp"},
+      {"s":"Omar Marmoush","m":"58","side":"tot"},
+      {"s":"Ben Davies","m":"90+6","side":"tot"}]},
+    {"d":"2026-10-24","h":"A","opp":"첼시","tf":2,"of":0,"g":[
+      {"s":"Mike Penders","m":"77","side":"tot","og":true},
+      {"s":"Mathys Tel","m":null,"note":"후반 막판","side":"tot"}]},
+    {"d":"2026-10-31","h":"H","opp":"크리스탈 팰리스","tf":2,"of":0,"g":[
+      {"s":"Archie Gray","m":"25","side":"tot"},
+      {"s":"Jan Paul van Hecke","m":"73","side":"tot"}]},
+    {"d":"2026-11-07","h":"A","opp":"리즈","tf":0,"of":1,"g":[
+      {"s":"Noah Okafor","m":"79","side":"opp"}]}
+  ],
+  "fixtures": [
+    {"kick":"2026-11-21T15:00:00Z","h":"H","opp":"입스위치","venue":"토트넘 홋스퍼 스타디움"},
+    {"kick":"2026-11-29T14:05:00Z","h":"A","opp":"선덜랜드","venue":"스타디움 오브 라이트"}
+  ]
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var ME = '토트넘';
+  var WD = ['일', '월', '화', '수', '목', '금', '토'];
+  var D = JSON.parse(document.getElementById('coys-data').textContent);
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+  /* Calendar parts in Korea time (UTC+9) for any instant. */
+  function kst(ms) {
+    var d = new Date(ms + 9 * 3600000);
+    return { y: d.getUTCFullYear(), mo: d.getUTCMonth() + 1, da: d.getUTCDate(), wd: d.getUTCDay(), h: d.getUTCHours(), mi: d.getUTCMinutes(), dayNo: Math.floor((ms + 9 * 3600000) / 86400000) };
+  }
+  function resultOf(m) { return m.tf > m.of ? 'w' : (m.tf < m.of ? 'l' : 'd'); }
+  var RES = { w: '승', d: '무', l: '패' };
+
+  function renderNext() {
+    var now = Date.now();
+    var box = $('next'), then = $('then');
+    var upcoming = D.fixtures.filter(function (f) { return new Date(f.kick).getTime() + 3 * 3600000 > now; });
+    if (!upcoming.length) {
+      box.innerHTML = '<div><p class="label" id="next-label">다음 경기</p><p class="vs">일정 업데이트 대기 중</p></div>';
+      then.textContent = '';
+      return;
+    }
+    var f = upcoming[0], t = new Date(f.kick).getTime(), k = kst(t);
+    var home = f.h === 'H';
+    var diff = k.dayNo - kst(now).dayNo;
+    var big, cap;
+    if (now < t) { big = diff <= 0 ? 'D-DAY' : 'D-' + diff; cap = '킥오프까지'; }
+    else { big = '진행 중'; cap = '결과는 업데이트 후 표시돼요'; }
+    box.innerHTML =
+      '<div>' +
+        '<p class="label" id="next-label">다음 경기 <span class="chip">' + (home ? '홈' : '원정') + '</span><span>프리미어리그</span></p>' +
+        '<p class="vs">' + (home ? ME + '<span class="x">vs</span>' + esc(f.opp) : esc(f.opp) + '<span class="x">vs</span>' + ME) + '</p>' +
+        '<p class="when num">' + k.mo + '월 ' + k.da + '일 (' + WD[k.wd] + ') ' + p2(k.h) + ':' + p2(k.mi) + ' <span class="where">한국 시간</span></p>' +
+        '<p class="where">' + esc(f.venue) + '</p>' +
+      '</div>' +
+      '<div class="dday"><span class="big num">' + big + '</span><span class="cap">' + cap + '</span></div>';
+    if (upcoming[1]) {
+      var g = upcoming[1], gk = kst(new Date(g.kick).getTime());
+      then.innerHTML = '그다음 <b>' + esc(g.opp) + ' ' + (g.h === 'H' ? '홈' : '원정') + '</b> · ' + gk.mo + '월 ' + gk.da + '일 (' + WD[gk.wd] + ') ' + p2(gk.h) + ':' + p2(gk.mi);
+    } else { then.textContent = ''; }
+  }
+
+  function renderSummary() {
+    var idx = -1;
+    D.standings.forEach(function (r, i) { if (r.me) idx = i; });
+    var r = D.standings[idx];
+    var gd = r.gf - r.ga;
+    $('stats').innerHTML =
+      '<div class="stat"><dt>순위</dt><dd>' + (idx + 1) + '위</dd></div>' +
+      '<div class="stat"><dt>승점</dt><dd>' + r.pts + '<small> 점</small></dd></div>' +
+      '<div class="stat"><dt>전적</dt><dd>' + r.w + '승 ' + r.d + '무 ' + r.l + '패</dd></div>' +
+      '<div class="stat"><dt>승률</dt><dd>' + Math.round(r.w / r.p * 100) + '%</dd></div>' +
+      '<div class="stat"><dt>득점 : 실점</dt><dd>' + r.gf + ' : ' + r.ga + ' <small>(' + (gd > 0 ? '+' : '') + gd + ')</small></dd></div>';
+    var last5 = D.matches.slice().sort(function (a, b) { return a.d < b.d ? -1 : 1; }).slice(-5);
+    $('form').innerHTML = last5.map(function (m) {
+      var x = resultOf(m);
+      return '<span class="pill ' + x + '" title="' + esc(m.d + ' ' + m.opp + ' ' + m.tf + '-' + m.of) + '">' + RES[x] + '</span>';
+    }).join('');
+  }
+
+  function goalHtml(g, opp) {
+    var minute = g.m ? '<span class="gm">' + esc(g.m) + '\'</span>' : '<span class="gm txt">' + esc(g.note || '시간 미확인') + '</span>';
+    return '<li class="g ' + g.side + '">' + minute +
+      '<span class="gn">' + esc(g.s) + (g.og ? '<span class="og">자책골</span>' : '') + '</span>' +
+      '<span class="gt">' + (g.side === 'tot' ? ME : esc(opp)) + '</span></li>';
+  }
+
+  function renderMatches() {
+    var list = D.matches.slice().sort(function (a, b) { return a.d < b.d ? 1 : -1; });
+    $('matches').innerHTML = list.map(function (m) {
+      var x = resultOf(m), home = m.h === 'H';
+      var hn = home ? ME : m.opp, an = home ? m.opp : ME;
+      var hs = home ? m.tf : m.of, as = home ? m.of : m.tf;
+      var dp = m.d.split('-');
+      var body;
+      if (m.g.length) {
+        body = '<ol class="goal-list">' + m.g.map(function (g) { return goalHtml(g, m.opp); }).join('') + '</ol>';
+      } else if (m.tf + m.of === 0) {
+        body = '<p class="nogoal">골이 나오지 않은 0 : 0 무승부예요.</p>';
+      } else {
+        body = '<p class="nogoal">득점자 정보가 아직 없어요.</p>';
+      }
+      return '<details class="match"><summary>' +
+        '<div class="m-top"><span class="num">' + dp[1] + '.' + dp[2] + '</span><span>프리미어리그 · ' + (home ? '홈' : '원정') + '</span>' +
+        '<span class="res"><span class="pill ' + x + '"><span class="sr">토트넘 </span>' + RES[x] + '</span></span></div>' +
+        '<div class="m-score"><span class="t home' + (home ? ' me' : '') + '">' + esc(hn) + '</span>' +
+        '<span class="sc">' + hs + '<i>:</i>' + as + '</span>' +
+        '<span class="t away' + (home ? '' : ' me') + '">' + esc(an) + '</span></div>' +
+        '<span class="chev" aria-hidden="true"></span>' +
+        '</summary><div class="goals">' + body + '</div></details>';
+    }).join('');
+  }
+
+  function renderTable() {
+    $('table').innerHTML = D.standings.map(function (r, i) {
+      var gd = r.gf - r.ga;
+      return '<tr' + (r.me ? ' class="me"' : '') + '><td class="rk">' + (i + 1) + '</td><td class="tm">' + esc(r.t) + '</td>' +
+        '<td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.d + '</td><td>' + r.l + '</td>' +
+        '<td class="hide-sm">' + r.gf + '</td><td class="hide-sm">' + r.ga + '</td>' +
+        '<td>' + (gd > 0 ? '+' : '') + gd + '</td><td class="pts">' + r.pts + '</td></tr>';
+    }).join('');
+  }
+
+  function renderNotes() {
+    $('notes').innerHTML =
+      '<p>비공식 페이지이며, 토트넘 홋스퍼 FC 공식과 관련이 없어요.</p>' +
+      '<p>프리미어리그 경기만 보여줘요.</p>' +
+      '<p>경기 날짜는 현지(영국) 기준이고, 다음 경기 시간은 한국 시간이에요.</p>';
+  }
+
+  renderNext();
+  renderSummary();
+  renderMatches();
+  renderTable();
+  renderNotes();
+})();
+</script>
+
+</body></html>
